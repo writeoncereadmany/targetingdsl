@@ -7,7 +7,12 @@ WHITESPACE : ' ' -> skip;
 
 // PARSING
 
-targeting : clause+ ;
+targeting
+    : clauses                                       # cases
+    | 'either' clauses ('or' clauses)+ 'end'        # alternatives
+    ;
+
+clauses : clause+ ;
 
 clause : path condition;
 

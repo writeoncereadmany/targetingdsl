@@ -26,7 +26,10 @@ public class Equals implements Targeting {
                 }
             }
 
-            return iterator.equals(expectedValue);
+            if(iterator instanceof String) {
+                return iterator.equals(expectedValue);
+            }
+            return false;
         } catch (IOException ex) {
             return false;
         }

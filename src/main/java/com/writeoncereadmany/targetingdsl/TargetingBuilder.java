@@ -6,7 +6,6 @@ import org.antlr.v4.runtime.tree.ParseTree;
 
 import java.util.List;
 
-import static co.unruly.control.result.Introducers.ifEquals;
 import static co.unruly.control.result.Introducers.ifType;
 import static co.unruly.control.result.Match.matchValue;
 import static java.util.stream.Collectors.toList;
@@ -17,7 +16,19 @@ import static java.util.stream.Collectors.toList;
 public class TargetingBuilder {
 
     public static Targeting build(TargetingParser.TargetingContext ctx) {
+        return matchValue(ctx,
+                ifType(TargetingParser.CasesContext.class, cases -> buildClauses(cases.clauses())),
+                ifType(TargetingParser.AlternativesContext.class, options -> buildOptions(options.clauses()))
+        ).otherwise(__ -> new MangledTargeting());
+    }
+
+    private static Targeting buildClauses(TargetingParser.ClausesContext ctx) {
         return new AllOf(ctx.clause().stream().map(clause -> buildClause(clause)).collect(toList()));
+    }
+
+    private static Targeting buildOptions(List<TargetingParser.ClausesContext> ctx) {
+        List<Targeting> alternatives = ctx.stream().map(TargetingBuilder::buildClauses).collect(toList());
+        return new AnyOf(alternatives);
     }
 
     private static Targeting buildClause(TargetingParser.ClauseContext ctx) {
