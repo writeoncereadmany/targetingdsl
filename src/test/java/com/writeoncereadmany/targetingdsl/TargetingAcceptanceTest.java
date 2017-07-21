@@ -54,6 +54,17 @@ public class TargetingAcceptanceTest {
     }
 
     @Test
+    public void handlesMultupleAlternatives() {
+        final String targetingScript = "either imp.trousers = enormous or imp.hat = jaunty or imp.shoes = pointy end";
+        final Targeting targeting = compiler.compile(targetingScript);
+
+        assertTrue(targeting.isSatisfiedBy("{ \"trousers\" : \"enormous\" }"));
+        assertTrue(targeting.isSatisfiedBy("{ \"hat\" : \"jaunty\" }"));
+        assertTrue(targeting.isSatisfiedBy("{ \"shoes\" : \"pointy\" }"));
+        assertFalse(targeting.isSatisfiedBy("{ \"shirt\" : \"stripey\" }"));
+    }
+
+    @Test
     public void checksIfValueInList() {
         final String targetingScript = "imp.starred in [buffy, angel, charmed]";
         final Targeting targeting = compiler.compile(targetingScript);
