@@ -10,11 +10,6 @@ import java.util.Map;
 public class MangledTargeting implements Targeting {
 
     @Override
-    public boolean isSatisfiedBy(String jsonImpression) {
-        throw new RuntimeException();
-    }
-
-    @Override
     public boolean isSatisfiedBy(Map impression) {
         throw new RuntimeException();
     }

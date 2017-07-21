@@ -13,10 +13,6 @@ public class AllOf implements Targeting {
         this.targetingList = targetingList;
     }
 
-    @Override
-    public boolean isSatisfiedBy(String jsonImpression) {
-        return targetingList.stream().allMatch(targeting -> targeting.isSatisfiedBy(jsonImpression));
-    }
 
     @Override
     public boolean isSatisfiedBy(Map impression) {

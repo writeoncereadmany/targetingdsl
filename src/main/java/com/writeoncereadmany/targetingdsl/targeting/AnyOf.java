@@ -14,11 +14,6 @@ public class AnyOf implements Targeting {
     }
 
     @Override
-    public boolean isSatisfiedBy(String jsonImpression) {
-        return targetingList.stream().anyMatch(targeting -> targeting.isSatisfiedBy(jsonImpression));
-    }
-
-    @Override
     public boolean isSatisfiedBy(Map impression) {
         return targetingList.stream().anyMatch(targeting -> targeting.isSatisfiedBy(impression));
     }

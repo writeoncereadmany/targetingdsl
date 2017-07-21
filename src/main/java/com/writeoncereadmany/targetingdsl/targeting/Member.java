@@ -19,14 +19,6 @@ public class Member implements Targeting {
         this.expectedValues = expectedValue;
     }
 
-    public boolean isSatisfiedBy(String jsonImpression) {
-        try {
-            return isSatisfiedBy(new ObjectMapper().readValue(jsonImpression, Map.class));
-        } catch (IOException ex) {
-            return false;
-        }
-    }
-
     @Override
     public boolean isSatisfiedBy(Map impression) {
         return expectedValues.contains(extractPath(path, impression));

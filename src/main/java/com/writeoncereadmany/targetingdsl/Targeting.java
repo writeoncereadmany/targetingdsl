@@ -1,13 +1,19 @@
 package com.writeoncereadmany.targetingdsl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.IOException;
 import java.util.Map;
 
-/**
- * Created by tomj on 21/07/2017.
- */
 public interface Targeting {
 
-    boolean isSatisfiedBy(String jsonImpression);
+    default boolean isSatisfiedBy(String jsonImpression) {
+        try {
+            return isSatisfiedBy(new ObjectMapper().readValue(jsonImpression, Map.class));
+        } catch (IOException ex) {
+            return false;
+        }
+    }
 
     boolean isSatisfiedBy(Map impression);
 }
