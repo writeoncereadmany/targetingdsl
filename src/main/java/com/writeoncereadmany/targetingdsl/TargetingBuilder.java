@@ -1,10 +1,7 @@
 package com.writeoncereadmany.targetingdsl;
 
 import com.writeoncereadmany.targetingdsl.generated.TargetingParser;
-import com.writeoncereadmany.targetingdsl.targeting.AllOf;
-import com.writeoncereadmany.targetingdsl.targeting.Contains;
-import com.writeoncereadmany.targetingdsl.targeting.MangledTargeting;
-import com.writeoncereadmany.targetingdsl.targeting.OperatorBuilder;
+import com.writeoncereadmany.targetingdsl.targeting.*;
 import org.antlr.v4.runtime.tree.ParseTree;
 
 import java.util.List;
@@ -32,7 +29,8 @@ public class TargetingBuilder {
 
     private static OperatorBuilder buildOperator(TargetingParser.OperatorContext ctx) {
         return matchValue(ctx.getText(),
-            ifEquals("contains", __ -> Contains.builder())
+            ifEquals("contains", __ -> Contains.builder()),
+            ifEquals("=", __ -> Equals.builder())
         ).otherwise(__ -> MangledTargeting.builder());
     }
 

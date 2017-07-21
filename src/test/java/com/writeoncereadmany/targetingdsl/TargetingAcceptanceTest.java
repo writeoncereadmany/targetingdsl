@@ -33,4 +33,13 @@ public class TargetingAcceptanceTest {
         assertFalse(targeting.isSatisfiedBy("{ \"audience\" : [\"hungry\", \"tired\"] }"));
         assertFalse(targeting.isSatisfiedBy("{ \"distractions\" : [\"balloons\", \"butterflies\"] }"));
     }
+
+    @Test
+    public void checksIfValueExactlyEqual() {
+        final String targetingScript = "imp.trousers = enormous";
+        final Targeting targeting = compiler.compile(targetingScript);
+
+        assertTrue(targeting.isSatisfiedBy("{ \"trousers\" : \"enormous\" }"));
+        assertFalse(targeting.isSatisfiedBy("{ \"trousers\" : \"skinny\" }"));
+    }
 }

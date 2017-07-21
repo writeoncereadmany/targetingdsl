@@ -13,6 +13,8 @@ clause : path operator value;
 
 path : 'imp.' IDENTIFIER ('.' IDENTIFIER)* ;
 
-operator : 'contains';
+operator
+    : 'contains'
+    | '=';
 
 value : IDENTIFIER;
