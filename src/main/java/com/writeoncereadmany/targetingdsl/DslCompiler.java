@@ -15,6 +15,6 @@ public class DslCompiler {
         TargetingLexer lexer = new TargetingLexer(fromString(targeting));
         TargetingParser parser = new TargetingParser(new CommonTokenStream(lexer));
 
-        return TargetingBuilder2.build(parser.targeting());
+        return TargetingBuilder.build(parser.targeting());
     }
 }

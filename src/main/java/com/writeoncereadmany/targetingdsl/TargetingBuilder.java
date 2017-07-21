@@ -1,49 +1,42 @@
 package com.writeoncereadmany.targetingdsl;
 
-import com.writeoncereadmany.targetingdsl.generated.TargetingBaseListener;
 import com.writeoncereadmany.targetingdsl.generated.TargetingParser;
+import com.writeoncereadmany.targetingdsl.targeting.AllOf;
 import com.writeoncereadmany.targetingdsl.targeting.Contains;
+import com.writeoncereadmany.targetingdsl.targeting.MangledTargeting;
+import com.writeoncereadmany.targetingdsl.targeting.OperatorBuilder;
 import org.antlr.v4.runtime.tree.ParseTree;
 
 import java.util.List;
-import java.util.Stack;
-import java.util.function.BiFunction;
 
+import static co.unruly.control.result.Introducers.ifEquals;
+import static co.unruly.control.result.Match.matchValue;
 import static java.util.stream.Collectors.toList;
 
-public class TargetingBuilder extends TargetingBaseListener {
+/**
+ * Created by tomj on 21/07/2017.
+ */
+public class TargetingBuilder {
 
-    Stack<Object> arguments = new Stack<>();
-    Targeting targeting;
-
-
-    @Override
-    public void exitPath(TargetingParser.PathContext ctx) {
-        arguments.push(ctx.IDENTIFIER().stream().map(ParseTree::getText).collect(toList()));
+    public static Targeting build(TargetingParser.TargetingContext ctx) {
+        return new AllOf(ctx.clause().stream().map(clause -> buildClause(clause)).collect(toList()));
     }
 
-    @Override
-    public void exitValue(TargetingParser.ValueContext ctx) {
-        arguments.push(ctx.IDENTIFIER().getText());
+    private static Targeting buildClause(TargetingParser.ClauseContext ctx) {
+        return buildOperator(ctx.operator()).build(buildPath(ctx.path()), buildValue(ctx.value()));
     }
 
-    @Override
-    public void exitOperator(TargetingParser.OperatorContext ctx) {
-        arguments.push(Contains.builder());
+    private static List<String> buildPath(TargetingParser.PathContext path) {
+        return path.IDENTIFIER().stream().map(ParseTree::getText).collect(toList());
     }
 
-    @Override
-    public void exitClause(TargetingParser.ClauseContext ctx) {
-        Object value = arguments.pop();
-        Object operator = arguments.pop();
-        Object path = arguments.pop();
-
-        if(operator instanceof BiFunction) {
-            targeting = (Targeting) ((BiFunction) operator).apply(path, value);
-        }
+    private static OperatorBuilder buildOperator(TargetingParser.OperatorContext ctx) {
+        return matchValue(ctx.getText(),
+            ifEquals("contains", __ -> Contains.builder())
+        ).otherwise(__ -> MangledTargeting.builder());
     }
 
-    public Targeting getTargeting() {
-        return targeting;
+    private static String buildValue(TargetingParser.ValueContext ctx) {
+        return ctx.getText();
     }
 }
