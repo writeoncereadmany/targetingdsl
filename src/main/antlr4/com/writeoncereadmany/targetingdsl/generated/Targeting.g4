@@ -14,14 +14,10 @@ clause : path condition;
 path : 'imp.' IDENTIFIER ('.' IDENTIFIER)* ;
 
 condition
-    : single_operator value
-    | list_operator values;
-
-single_operator
-    : 'contains'
-    | '=';
-
-list_operator : 'in';
+    : 'contains' value   # contains
+    | '=' value          # equal
+    | 'in' values        # membership
+    ;
 
 value : IDENTIFIER;
 

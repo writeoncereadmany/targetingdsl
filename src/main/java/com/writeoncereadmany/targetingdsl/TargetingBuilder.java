@@ -7,6 +7,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import java.util.List;
 
 import static co.unruly.control.result.Introducers.ifEquals;
+import static co.unruly.control.result.Introducers.ifType;
 import static co.unruly.control.result.Match.matchValue;
 import static java.util.stream.Collectors.toList;
 
@@ -29,18 +30,11 @@ public class TargetingBuilder {
     }
 
     private static Targeting applyCondition(List<String> path, TargetingParser.ConditionContext condition) {
-        if(condition.single_operator() != null && condition.value() != null) {
-            return buildOperator(condition.single_operator()).build(path, buildValue(condition.value()));
-        } else {
-            return new Member(path, buildValues(condition.values()));
-        }
-    }
-
-    private static OperatorBuilder buildOperator(TargetingParser.Single_operatorContext ctx) {
-        return matchValue(ctx.getText(),
-            ifEquals("contains", __ -> Contains.builder()),
-            ifEquals("=", __ -> Equals.builder())
-        ).otherwise(__ -> MangledTargeting.builder());
+        return matchValue(condition,
+                ifType(TargetingParser.ContainsContext.class, ctx -> new Contains(path, buildValue(ctx.value()))),
+                ifType(TargetingParser.EqualContext.class, ctx -> new Equals(path, buildValue(ctx.value()))),
+                ifType(TargetingParser.MembershipContext.class, ctx -> new Member(path, buildValues(ctx.values())))
+        ).otherwise(__ -> new MangledTargeting());
     }
 
     private static List<String> buildValues(TargetingParser.ValuesContext ctx) {
