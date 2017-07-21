@@ -38,13 +38,7 @@ public class Contains implements Targeting {
         }
     }
 
-    public static BiFunction<Object, Object, Targeting> builder() {
-        return (path, value) -> {
-            if(value instanceof String && path instanceof List) {
-                return new Contains((List) path, (String) value);
-            } else {
-                return new MangledTargeting();
-            }
-        };
+    public static OperatorBuilder builder() {
+        return Contains::new;
     }
 }

@@ -10,4 +10,8 @@ public class MangledTargeting implements Targeting {
     public boolean isSatisfiedBy(String jsonImpression) {
         throw new RuntimeException();
     }
+
+    public static OperatorBuilder builder() {
+        return (x, y) -> new MangledTargeting();
+    }
 }
