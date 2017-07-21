@@ -65,6 +65,18 @@ public class TargetingAcceptanceTest {
     }
 
     @Test
+    public void canMixAlternativesAndRequirements() {
+        final String targetingScript = "imp.quality = top either imp.trousers = enormous or imp.hat = jaunty imp.shoes = pointy end";
+        final Targeting targeting = compiler.compile(targetingScript);
+
+        assertTrue(targeting.isSatisfiedBy("{ \"quality\" : \"top\", \"trousers\" : \"enormous\" }"));
+        assertFalse(targeting.isSatisfiedBy("{ \"quality\" : \"top\", \"hat\" : \"jaunty\" }"));
+        assertFalse(targeting.isSatisfiedBy("{ \"quality\" : \"top\", \"shoes\" : \"pointy\" }"));
+        assertTrue(targeting.isSatisfiedBy("{ \"quality\" : \"top\", \"hat\" : \"jaunty\" , \"shoes\" : \"pointy\" }"));
+        assertFalse(targeting.isSatisfiedBy("{ \"trousers\" : \"enormous\" }"));
+    }
+
+    @Test
     public void checksIfValueInList() {
         final String targetingScript = "imp.starred in [buffy, angel, charmed]";
         final Targeting targeting = compiler.compile(targetingScript);

@@ -16,24 +16,22 @@ import static java.util.stream.Collectors.toList;
 public class TargetingBuilder {
 
     public static Targeting build(TargetingParser.TargetingContext ctx) {
-        return matchValue(ctx,
-                ifType(TargetingParser.CasesContext.class, cases -> buildClauses(cases.clauses())),
-                ifType(TargetingParser.AlternativesContext.class, options -> buildOptions(options.clauses()))
-        ).otherwise(__ -> new MangledTargeting());
+        return new AllOf(ctx.clause().stream().map(TargetingBuilder::buildClause).collect(toList()));
     }
 
-    private static Targeting buildClauses(TargetingParser.ClausesContext ctx) {
-        return new AllOf(ctx.clause().stream().map(clause -> buildClause(clause)).collect(toList()));
-    }
-
-    private static Targeting buildOptions(List<TargetingParser.ClausesContext> ctx) {
-        List<Targeting> alternatives = ctx.stream().map(TargetingBuilder::buildClauses).collect(toList());
+    private static Targeting buildOptions(List<TargetingParser.TargetingContext> ctx) {
+        List<Targeting> alternatives = ctx.stream().map(TargetingBuilder::build).collect(toList());
         return new AnyOf(alternatives);
     }
 
     private static Targeting buildClause(TargetingParser.ClauseContext ctx) {
-        List<String> path = buildPath(ctx.path());
-        return applyCondition(path, ctx.condition());
+        return matchValue(ctx,
+                ifType(TargetingParser.AlternativeContext.class, options -> buildOptions(options.targeting())),
+                ifType(TargetingParser.CaseContext.class, cases -> {
+                    List<String> path = buildPath(cases.path());
+                    return applyCondition(path, cases.condition());
+                })).otherwise(__ -> new MangledTargeting());
+
     }
 
     private static List<String> buildPath(TargetingParser.PathContext path) {

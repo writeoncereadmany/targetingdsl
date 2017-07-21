@@ -8,13 +8,11 @@ WHITESPACE : ' ' -> skip;
 // PARSING
 
 targeting
-    : clauses                                       # cases
-    | 'either' clauses ('or' clauses)+ 'end'        # alternatives
-    ;
+    : clause+ ;
 
-clauses : clause+ ;
-
-clause : path condition;
+clause : path condition                                 # case
+       | 'either' targeting ('or' targeting)+ 'end'     # alternative
+       ;
 
 path : 'imp.' IDENTIFIER ('.' IDENTIFIER)* ;
 
