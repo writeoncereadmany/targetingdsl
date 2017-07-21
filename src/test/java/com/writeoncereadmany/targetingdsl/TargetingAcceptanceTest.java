@@ -42,4 +42,13 @@ public class TargetingAcceptanceTest {
         assertTrue(targeting.isSatisfiedBy("{ \"trousers\" : \"enormous\" }"));
         assertFalse(targeting.isSatisfiedBy("{ \"trousers\" : \"skinny\" }"));
     }
+
+    @Test
+    public void checksIfValueInList() {
+        final String targetingScript = "imp.starred in [buffy, angel, charmed]";
+        final Targeting targeting = compiler.compile(targetingScript);
+
+        assertTrue(targeting.isSatisfiedBy("{ \"starred\" : \"angel\" }"));
+        assertFalse(targeting.isSatisfiedBy("{ \"starred\" : \"psych\" }"));
+    }
 }

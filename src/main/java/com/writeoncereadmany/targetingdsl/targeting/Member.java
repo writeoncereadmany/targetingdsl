@@ -7,14 +7,14 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-public class Equals implements Targeting {
+public class Member implements Targeting {
 
     private final List<String> path;
-    private final String expectedValue;
+    private final List<String> expectedValues;
 
-    public Equals(List<String> path, String expectedValue) {
+    public Member(List<String> path, List<String> expectedValue) {
         this.path = path;
-        this.expectedValue = expectedValue;
+        this.expectedValues = expectedValue;
     }
 
     public boolean isSatisfiedBy(String jsonImpression) {
@@ -26,13 +26,10 @@ public class Equals implements Targeting {
                 }
             }
 
-            return iterator.equals(expectedValue);
+            return expectedValues.contains(iterator);
+
         } catch (IOException ex) {
             return false;
         }
-    }
-
-    public static OperatorBuilder builder() {
-        return Equals::new;
     }
 }

@@ -9,12 +9,20 @@ WHITESPACE : ' ' -> skip;
 
 targeting : clause+ ;
 
-clause : path operator value;
+clause : path condition;
 
 path : 'imp.' IDENTIFIER ('.' IDENTIFIER)* ;
 
-operator
+condition
+    : single_operator value
+    | list_operator values;
+
+single_operator
     : 'contains'
     | '=';
 
+list_operator : 'in';
+
 value : IDENTIFIER;
+
+values : '[' IDENTIFIER (',' IDENTIFIER)+ ']';

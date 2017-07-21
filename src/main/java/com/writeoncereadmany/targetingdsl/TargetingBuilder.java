@@ -20,18 +20,31 @@ public class TargetingBuilder {
     }
 
     private static Targeting buildClause(TargetingParser.ClauseContext ctx) {
-        return buildOperator(ctx.operator()).build(buildPath(ctx.path()), buildValue(ctx.value()));
+        List<String> path = buildPath(ctx.path());
+        return applyCondition(path, ctx.condition());
     }
 
     private static List<String> buildPath(TargetingParser.PathContext path) {
         return path.IDENTIFIER().stream().map(ParseTree::getText).collect(toList());
     }
 
-    private static OperatorBuilder buildOperator(TargetingParser.OperatorContext ctx) {
+    private static Targeting applyCondition(List<String> path, TargetingParser.ConditionContext condition) {
+        if(condition.single_operator() != null && condition.value() != null) {
+            return buildOperator(condition.single_operator()).build(path, buildValue(condition.value()));
+        } else {
+            return new Member(path, buildValues(condition.values()));
+        }
+    }
+
+    private static OperatorBuilder buildOperator(TargetingParser.Single_operatorContext ctx) {
         return matchValue(ctx.getText(),
             ifEquals("contains", __ -> Contains.builder()),
             ifEquals("=", __ -> Equals.builder())
         ).otherwise(__ -> MangledTargeting.builder());
+    }
+
+    private static List<String> buildValues(TargetingParser.ValuesContext ctx) {
+        return ctx.IDENTIFIER().stream().map(ParseTree::getText).collect(toList());
     }
 
     private static String buildValue(TargetingParser.ValueContext ctx) {
