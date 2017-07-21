@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
 
+import static com.writeoncereadmany.targetingdsl.targeting.PathExtractor.extractPath;
+
 public class Contains implements Targeting {
 
     private final List<String> path;
@@ -20,22 +22,21 @@ public class Contains implements Targeting {
 
     public boolean isSatisfiedBy(String jsonImpression) {
         try {
-            Object iterator = new ObjectMapper().readValue(jsonImpression, Map.class);
-            for(String element : path) {
-                if(iterator instanceof Map) {
-                    iterator = ((Map) iterator).get(element);
-                }
-            }
-
-            if(iterator instanceof List) {
-                return ((List) iterator).contains(expectedValue);
-            }
-
-            return false;
-
+            return isSatisfiedBy(new ObjectMapper().readValue(jsonImpression, Map.class));
         } catch (IOException ex) {
             return false;
         }
+    }
+
+    @Override
+    public boolean isSatisfiedBy(Map impression) {
+        Object object = extractPath(path, impression);
+
+        if(object instanceof List) {
+            return ((List) object).contains(expectedValue);
+        }
+
+        return false;
     }
 
     public static OperatorBuilder builder() {

@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import static com.writeoncereadmany.targetingdsl.targeting.PathExtractor.extractPath;
+
 public class Member implements Targeting {
 
     private final List<String> path;
@@ -19,17 +21,14 @@ public class Member implements Targeting {
 
     public boolean isSatisfiedBy(String jsonImpression) {
         try {
-            Object iterator = new ObjectMapper().readValue(jsonImpression, Map.class);
-            for(String element : path) {
-                if(iterator instanceof Map) {
-                    iterator = ((Map) iterator).get(element);
-                }
-            }
-
-            return expectedValues.contains(iterator);
-
+            return isSatisfiedBy(new ObjectMapper().readValue(jsonImpression, Map.class));
         } catch (IOException ex) {
             return false;
         }
+    }
+
+    @Override
+    public boolean isSatisfiedBy(Map impression) {
+        return expectedValues.contains(extractPath(path, impression));
     }
 }

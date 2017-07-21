@@ -3,6 +3,7 @@ package com.writeoncereadmany.targetingdsl.targeting;
 import com.writeoncereadmany.targetingdsl.Targeting;
 
 import java.util.List;
+import java.util.Map;
 
 public class AllOf implements Targeting {
 
@@ -15,5 +16,10 @@ public class AllOf implements Targeting {
     @Override
     public boolean isSatisfiedBy(String jsonImpression) {
         return targetingList.stream().allMatch(targeting -> targeting.isSatisfiedBy(jsonImpression));
+    }
+
+    @Override
+    public boolean isSatisfiedBy(Map impression) {
+        return targetingList.stream().allMatch(targeting -> targeting.isSatisfiedBy(impression));
     }
 }
