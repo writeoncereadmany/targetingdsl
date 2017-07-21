@@ -21,4 +21,16 @@ public class TargetingAcceptanceTest {
         assertFalse(targeting.isSatisfiedBy("{ \"audience\" : [\"hungry\", \"tired\"] }"));
         assertFalse(targeting.isSatisfiedBy("{ \"distractions\" : [\"balloons\", \"butterflies\"] }"));
     }
+
+    @Test
+    public void canCheckMultipleClauses() {
+        final String targetingScript =
+                "imp.audience contains angry\n" +
+                "imp.audience contains disappointed";
+        final Targeting targeting = compiler.compile(targetingScript);
+
+        assertTrue(targeting.isSatisfiedBy("{ \"audience\" : [\"angry\", \"disappointed\"] }"));
+        assertFalse(targeting.isSatisfiedBy("{ \"audience\" : [\"hungry\", \"tired\"] }"));
+        assertFalse(targeting.isSatisfiedBy("{ \"distractions\" : [\"balloons\", \"butterflies\"] }"));
+    }
 }
