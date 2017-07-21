@@ -6,10 +6,8 @@ import com.writeoncereadmany.targetingdsl.Targeting;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiFunction;
 
-/**
- * Created by tomj on 21/07/2017.
- */
 public class Contains implements Targeting {
 
     private final List<String> path;
@@ -38,5 +36,15 @@ public class Contains implements Targeting {
         } catch (IOException ex) {
             return false;
         }
+    }
+
+    public static BiFunction<Object, Object, Targeting> builder() {
+        return (path, value) -> {
+            if(value instanceof String && path instanceof List) {
+                return new Contains((List) path, (String) value);
+            } else {
+                return new MangledTargeting();
+            }
+        };
     }
 }
