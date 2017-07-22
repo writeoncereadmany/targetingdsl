@@ -3,7 +3,7 @@ grammar Targeting;
 // LEXING
 
 IDENTIFIER : [a-zA-Z]+;
-WHITESPACE : ' ' -> skip;
+WHITESPACE : [ \t\r\n] -> skip;
 
 // PARSING
 
